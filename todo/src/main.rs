@@ -41,16 +41,8 @@ async fn index(db: web::Data<Pool<SqliteConnectionManager>>) -> Result<HttpRespo
 
     let mut entries = Vec::new();
     for row in rows {
-        entries.push(row?)
+        entries.push(row?);
     }
-    entries.push(TodoEntry {
-        id: 1,
-        text: "First entry".to_string(),
-    });
-    entries.push(TodoEntry {
-        id: 2,
-        text: "Second entry".to_string(),
-    });
     let html = IndexTemplate { entries };
     let response_body = html.render()?;
     Ok(HttpResponse::Ok()
@@ -74,7 +66,7 @@ async fn main() -> Result<(), actix_web::Error> {
     )
         .expect("Failed to create a todo table");
 
-    HttpServer::new(move || App::new().service(index))
+    HttpServer::new(move || App::new().service(index).data(pool.clone()))
         .bind("0.0.0.0:8080")?
         .run()
         .await?;
